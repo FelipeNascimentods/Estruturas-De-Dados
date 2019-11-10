@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+#include <string.h>
 #define MAX 24
 #define MIN 0
 
@@ -7,9 +7,9 @@ typedef int Apontador;
 typedef int TipoChave;
 
 typedef struct{
-	String nome;
-	String CPF;
-	String hora;
+	char nome[30];
+	long int CPF;
+	int hora;
 	char sexo;
 }TipoItem;
 
@@ -26,22 +26,38 @@ void enfileirar(TipoItem item, TipoFila *Fila);
 void desenfileirar(TipoItem *item, TipoFila *Fila);
 void imprimir(TipoFila *Fila);
 
+void existeAgendamento(TipoFila *Fila, TipoItem item);
+
 int main(){
+	char resp;
 	TipoFila fila;
 	TipoItem item;
 	
 	iniciaFila(&fila);
 	
-	item.chave = 1;
-	enfileirar(item, &fila);
-	item.chave = 2;
-	enfileirar(item, &fila);
-	item.chave = 3;
-	enfileirar(item, &fila);
-	item.chave = 4;
-	enfileirar(item, &fila);
-	item.chave = 15;
-	enfileirar(item, &fila);
+	printf("---------- Agendamento ----------\n\n");
+	do{
+		printf("Digite o nome: ");
+		fflush(stdin);
+		fgets(item.nome, 30, stdin);
+		item.nome[strlen(item.nome)-1] = '\0';
+		
+		printf("\nDigite o CPF: ");
+		scanf("%d", &item.CPF);
+		
+		printf("\nDigite o sexo: [m/f]");
+		fflush(stdin);
+		scanf("%c", &item.sexo);
+		
+		printf("\nDigite o horario a ser agendado: [Somente numeros inteiros] ");
+		scanf("%d", &item.hora);
+		
+		existeAgendamento(&fila, item);
+		
+		printf("Deseja continuar? [s/n] ");
+		fflush(stdin);
+		scanf("%c", &resp);
+	}while(resp == 's');
 	
 	imprimir(&fila);
 	
@@ -85,9 +101,24 @@ void imprimir(TipoFila *Fila){
 	printf("\n------ Fila ------\n");
 	int i = Fila->frente-1, count;
 	for(count = 0; count < Fila->numEmelentos; count++){
-		printf("%d ", Fila->item[i].chave);
+		printf("Nome: %s\n", Fila->item[i].nome);
+		printf("CPF: %d\n", Fila->item[i].CPF);
+		printf("Sexo: %c\n", Fila->item[i].sexo);
+		printf("Hora marcada: %d\n", Fila->item[i].hora);
 		i = (i+1) % MAX;
 	}
-	printf("\n\n");
 }
 
+void existeAgendamento(TipoFila *Fila, TipoItem item){
+	int i = Fila->frente-1, count;
+	for(count = 0; count<24; count++){
+		if((item.CPF != Fila->item[i].CPF) && (item.hora != Fila->item[i].hora)){
+			enfileirar(item, Fila);
+			return;			       
+		}else{
+			printf("\nUsuario ja possui horario agendado!\n");
+			break;	
+		}
+		i = (i+1) % MAX;
+	}
+}
