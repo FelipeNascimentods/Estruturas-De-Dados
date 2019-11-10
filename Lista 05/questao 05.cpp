@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -60,17 +59,25 @@ void exibirFila(TipoFila *Fila){
 	}
 }
 
+void ordenaCrescente(TipoFila *Fila){
+	Apontador aux = Fila->frente;
+	while(aux->prox != NULL){
+		if(aux->prox.item.chave > Fila-> )
+		aux = aux->prox;
+	}
+}
+
 int main(){
 	TipoFila fila;
 	TipoItem item;
 	
 	iniciaFila(&fila);
 	
-	item.chave = 1;
+	item.chave = 100;
 	enfileirar(item, &fila);
 	item.chave = 2;
 	enfileirar(item, &fila);
-	item.chave = 3;
+	item.chave = 30;
 	enfileirar(item, &fila);
 	item.chave = 4;
 	enfileirar(item, &fila);
