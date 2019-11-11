@@ -72,14 +72,12 @@ void ordenaCrescente(TipoFila *Fila){
         aux = aux->prox;
     }
 
-    for(i=1; i<tam; i++){
-        j = i;
-        while(j!=0){
-            if(v[j].chave > v[j-1].chave){
-                item = v[j];
-                v[j] = v[j-1];
-                v[j-1] = item;
-                j--;
+    for(i=0; i<tam; i++){
+        for(j=i; j<tam; j++){
+            if(v[i].chave > v[j].chave){
+                item = v[i];
+                v[i] = v[j];
+                v[j] = item;
             }
         }
     }
@@ -107,12 +105,12 @@ int main(){
 	item.chave = 15;
 	enfileirar(item, &fila);
 
-	exibirLista(&fila);
+	exibirFila(&fila);
 
 	printf("\nOrdenando a fila...\n");
 	ordenaCrescente(&fila);
 
-	exibirLista(&fila);
+	exibirFila(&fila);
 	return 0;
 }
 
