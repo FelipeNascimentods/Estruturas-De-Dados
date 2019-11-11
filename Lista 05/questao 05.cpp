@@ -61,10 +61,18 @@ void exibirFila(TipoFila *Fila){
 
 void ordenaCrescente(TipoFila *Fila){
 	Apontador aux = Fila->frente;
+	TipoFila FAux;
+	
+	iniciaFila(&FAux);
+	
+	
 	while(aux->prox != NULL){
-		if(aux->prox.item.chave > Fila-> )
+		if(aux->item.chave > aux->prox->item.chave){
+			enfileirar(aux->prox->item, &FAux);		
+		}			
 		aux = aux->prox;
 	}
+	exibirFila(&FAux);
 }
 
 int main(){
@@ -84,7 +92,8 @@ int main(){
 	item.chave = 15;
 	enfileirar(item, &fila);
 	
-	exibirLista(&fila);
+	exibirFila(&fila);
+	ordenaCrescente(&fila);
 	return 0;
 }
 
