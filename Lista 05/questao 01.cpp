@@ -47,7 +47,7 @@ void desenfileirar(TipoItem *item, TipoFila *Fila){
 		Fila->frente = Fila->frente->prox;
 		*item = Fila->frente->item;
 		free(aux);
-		Fila->tamanho = Fila->tamanho - 1;
+		Fila->tamanho--;
 	}
 }
 

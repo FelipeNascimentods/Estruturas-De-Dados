@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #define MAX 24
-#define MIN 0
 
 typedef int Apontador;
-typedef int TipoChave;
 
 typedef struct{
 	char nome[30];
@@ -26,7 +25,7 @@ void enfileirar(TipoItem item, TipoFila *Fila);
 void desenfileirar(TipoItem *item, TipoFila *Fila);
 void imprimir(TipoFila *Fila);
 
-void existeAgendamento(TipoFila *Fila, TipoItem item);
+TipoFila existeAgendamento(TipoFila *Fila, TipoItem item);
 
 int main(){
 	char resp;
@@ -52,7 +51,11 @@ int main(){
 		printf("\nDigite o horario a ser agendado: [Somente numeros inteiros] ");
 		scanf("%d", &item.hora);
 		
-		existeAgendamento(&fila, item);
+		if(vazia(&fila)){
+			enfileirar(item, &fila);
+		}else{
+			fila = existeAgendamento(&fila, item);
+		}
 		
 		printf("Deseja continuar? [s/n] ");
 		fflush(stdin);
@@ -85,7 +88,7 @@ void enfileirar(TipoItem item, TipoFila *Fila){
 }
 
 int filaCheia(TipoFila *Fila){
-	return (Fila->frente==(Fila->tras % MAX) + 1);
+	return (Fila->numEmelentos == MAX-1);
 }
 
 void desenfileirar(TipoItem *item, TipoFila *Fila){
@@ -109,16 +112,27 @@ void imprimir(TipoFila *Fila){
 	}
 }
 
-void existeAgendamento(TipoFila *Fila, TipoItem item){
-	int i = Fila->frente-1, count;
-	for(count = 0; count<24; count++){
-		if((item.CPF != Fila->item[i].CPF) && (item.hora != Fila->item[i].hora)){
-			enfileirar(item, Fila);
-			return;			       
+TipoFila existeAgendamento(TipoFila *Fila, TipoItem item){
+	TipoFila aux;
+	TipoItem itemAux;
+	bool existe = false;
+	int i = Fila->numEmelentos-1;
+	
+	iniciaFila(&aux);
+	while(i>=0){
+		desenfileirar(&itemAux, Fila);
+		if(itemAux.CPF == item.CPF || item.hora == itemAux.hora){
+			enfileirar(itemAux, &aux);
+			existe = true;
 		}else{
-			printf("\nUsuario ja possui horario agendado!\n");
-			break;	
-		}
-		i = (i+1) % MAX;
+			enfileirar(itemAux, &aux);
+		}		
+		i--;
 	}
+	if(existe){
+		printf("\nUsuario ja cadastrado ou horario indisponivel!\n");
+	}else{
+		enfileirar(item, &aux);
+	}
+	return aux;
 }

@@ -1,13 +1,10 @@
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 typedef int TipoChave;
 
 typedef struct{
-	TipoChave numeroRegistro;
-	char nome[30];
+	TipoChave chave;
 }TipoItem;
 
 typedef struct TipoCelula *Apontador;
@@ -38,7 +35,7 @@ void enfileirar(TipoItem item, TipoFila *Fila){
 	Fila->tras = Fila->tras->prox;
 	Fila->tras->item = item;
 	Fila->tras->prox = NULL;
-	Fila->tamanho++;	
+	Fila->tamanho++;
 }
 
 void desenfileirar(TipoItem *item, TipoFila *Fila){
@@ -54,56 +51,68 @@ void desenfileirar(TipoItem *item, TipoFila *Fila){
 	}
 }
 
-void exibir(TipoFila *Fila){
+void exibirFila(TipoFila *Fila){
 	Apontador aux = Fila->frente->prox;
-	printf("\n---------- Listagem das aeronaves ----------\n");
 	while(aux != NULL){
-		printf("Nome: %s\n", aux->item.nome);
-		printf("Numero: %d\n", aux->item.numeroRegistro);
+		printf("%d\n", aux->item.chave);
 		aux = aux->prox;
 	}
 }
 
-void exibirProximoADecolar(TipoFila *Fila){
+void ordenaCrescente(TipoFila *Fila){
 	Apontador aux = Fila->frente->prox;
-	printf("\n---------- Caracteristicas Do Proximo A Decolar ----------\n");
-	printf("Nome: %s\n", aux->item.nome);
-	printf("Numero: %d\n", aux->item.numeroRegistro);
+	TipoItem itens[Fila->tamanho], item;
+	int i = 0, j, k;
+	
+	while(aux != NULL){
+		desenfileirar(&item, Fila);
+		itens[i] = item;
+		i++;
+		
+		aux = aux->prox;
+	}
+	
+	for(j = 0; j<i; j++){
+		for(k = j; k<i; k++){
+			if(itens[j].chave > itens[k].chave){
+				item = itens[j];
+				itens[j] = itens[k];
+				itens[k] = item;
+			}
+		}
+	}
+	
+	for(j = 0; j<i; j++){
+		enfileirar(itens[j], Fila);
+	}	
 }
 
 int main(){
-	char resp;
 	TipoFila fila;
 	TipoItem item;
-	
+
 	iniciaFila(&fila);
-	printf("---------- AEROPORTO ----------\n\n");
-	do{
-		printf("Digite o numero de registro da aeronave: ");
-		scanf("%d", &item.numeroRegistro);
-		printf("Digite o nome/compania da aeronave: ");
-		fflush(stdin);
-		fgets(item.nome, 30, stdin);
-		item.nome[strlen(item.nome)-1] = '\0';
-		
-		enfileirar(item, &fila);
-		
-		printf("Deseja continuar? [s/n] ");
-		fflush(stdin);
-		scanf("%c", &resp);
-	}while(resp == 's');
-	
-	printf("\nNumero de avioes a espera da decolagem = %d\n", fila.tamanho);
-	
-	desenfileirar(&item, &fila);
-	printf("\nDecolagem do %s - %d\n", item.nome, item.numeroRegistro);
-	
-	exibir(&fila);
-	
-	exibirProximoADecolar(&fila);
-		
+
+	item.chave = 100;
+	enfileirar(item, &fila);
+	item.chave = 2;
+	enfileirar(item, &fila);
+	item.chave = 30;
+	enfileirar(item, &fila);
+	item.chave = 4;
+	enfileirar(item, &fila);
+	item.chave = 15;
+	enfileirar(item, &fila);
+
+	exibirFila(&fila);
+
+	printf("\nOrdenando a fila...\n");
+	ordenaCrescente(&fila);
+
+	exibirFila(&fila);
 	return 0;
 }
+
 
 
 

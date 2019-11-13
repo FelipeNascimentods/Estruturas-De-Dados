@@ -47,7 +47,7 @@ void desenfileirar(TipoItem *item, TipoFila *Fila){
 		Fila->frente = Fila->frente->prox;
 		*item = Fila->frente->item;
 		free(aux);
-		Fila->tamanho = Fila->tamanho - 1;
+		Fila->tamanho--;
 	}
 }
 
@@ -61,16 +61,18 @@ void exibirLista(TipoFila *Fila){
 
 void divideParImpar(TipoFila *Fila){
 	TipoFila Par, Impar;
+	TipoItem item;
 	Apontador aux= Fila->frente->prox;
 	
 	iniciaFila(&Par);
 	iniciaFila(&Impar);
 	
 	while(aux != NULL){
-		if (aux->item.chave%2==0){
-			enfileirar(aux->item, &Par);
+		desenfileirar(&item, Fila);
+		if (item.chave%2==0){
+			enfileirar(item, &Par);
 		}else{
-			enfileirar(aux->item, &Impar);
+			enfileirar(item, &Impar);
 		}
 		aux = aux->prox;
 	}

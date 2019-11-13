@@ -1,79 +1,28 @@
 #include <stdio.h>
-#include <stdlib.h>
 
+#define MAX 6
+
+
+typedef int Apontador;
 typedef int TipoChave;
 
 typedef struct{
 	TipoChave chave;
 }TipoItem;
 
-typedef struct TipoCelula *Apontador;
-
-struct TipoCelula{
-	TipoItem item;
-	Apontador prox;
-}celula;
-
 typedef struct{
+	TipoItem item[MAX];
 	Apontador frente, tras;
-	int tamanho;
+	int numEmelentos;
 }TipoFila;
 
-void iniciaFila(TipoFila *Fila){
-	Fila->frente = (Apontador)malloc (sizeof(celula));
-	Fila->tras = Fila->frente;
-	Fila->frente->prox = NULL;
-	Fila->tamanho = 0;
-}
-
-int vazia(TipoFila *Fila){
-	return (Fila->frente==Fila->tras);
-}
-
-void enfileirar(TipoItem item, TipoFila *Fila){
-	Fila->tras->prox = (Apontador)malloc (sizeof(celula));
-	Fila->tras = Fila->tras->prox;
-	Fila->tras->item = item;
-	Fila->tras->prox = NULL;
-	Fila->tamanho++;	
-}
-
-void desenfileirar(TipoItem *item, TipoFila *Fila){
-	Apontador aux;
-	if(vazia(Fila)){
-		printf("Erro! Fila vazia.\n");
-	}else{
-		aux = Fila->frente;
-		Fila->frente = Fila->frente->prox;
-		*item = Fila->frente->item;
-		free(aux);
-		Fila->tamanho = Fila->tamanho - 1;
-	}
-}
-
-void exibirFila(TipoFila *Fila){
-	Apontador aux = Fila->frente->prox;
-	while(aux != NULL){
-		printf("%d\n", aux->item.chave);
-		aux = aux->prox;
-	}
-}
-
-void ordenaCrescente(TipoFila *Fila){
-	Apontador aux = Fila->frente;
-	TipoFila FAux;
-	
-	iniciaFila(&FAux);
-	
-	
-	while(aux->prox != NULL){
-		if(aux->item.chave > aux->prox->item.chave){
-			enfileirar(aux->prox->item, &FAux);		
-		}			
-		aux = aux->prox;
-	}
-	exibirFila(&FAux);
-}
+void iniciaFila(TipoFila *Fila);
+int vazia(TipoFila *Fila);
+int filaCheia(TipoFila *Fila);
+void enfileirar(TipoItem item, TipoFila *Fila);
+void desenfileirar(TipoItem *item, TipoFila *Fila);
+void imprimir(TipoFila *Fila);
+void furaFila(TipoItem item, TipoFila *Fila);
 
 int main(){
 	TipoFila fila;
@@ -81,23 +30,88 @@ int main(){
 	
 	iniciaFila(&fila);
 	
-	item.chave = 100;
+	item.chave = 1;
 	enfileirar(item, &fila);
 	item.chave = 2;
 	enfileirar(item, &fila);
-	item.chave = 30;
+	item.chave = 3;
 	enfileirar(item, &fila);
 	item.chave = 4;
 	enfileirar(item, &fila);
 	item.chave = 15;
 	enfileirar(item, &fila);
 	
-	exibirFila(&fila);
-	ordenaCrescente(&fila);
+	imprimir(&fila);
+	
+	item.chave = 4;
+	furaFila(item, &fila);
+	imprimir(&fila);
+	
 	return 0;
 }
 
+void iniciaFila(TipoFila *Fila){
+	Fila->frente = 1;
+	Fila->tras = Fila->frente;
+	Fila->numEmelentos = 0;
+}
 
+int vazia(TipoFila *Fila){
+	return (Fila->frente==Fila->tras);
+}
 
+void enfileirar(TipoItem item, TipoFila *Fila){
+	if(filaCheia(Fila)){
+		printf("Erro! Fila cheia.\n");
+	}else{
+		Fila->item[Fila->tras-1] = item;
+		Fila->tras = (Fila->tras % MAX) + 1;
+		Fila->numEmelentos++;
+	}
+}
 
+int filaCheia(TipoFila *Fila){
+	return (Fila->numEmelentos == MAX-1);
+}
 
+void desenfileirar(TipoItem *item, TipoFila *Fila){
+	if(vazia(Fila)){
+		printf("Erro! Fila vazia.\n");
+	}else{
+		*item = Fila->item[Fila->frente-1];
+		Fila->frente = (Fila->frente % MAX)+1;
+		Fila->numEmelentos--;
+	}
+}
+void imprimir(TipoFila *Fila){
+	printf("\n------ Fila ------\n");
+	int i = Fila->frente-1, count;
+	for(count = 0; count < Fila->numEmelentos; count++){
+		printf("%d ", Fila->item[i].chave);
+		i = (i+1) % MAX;
+	}
+	printf("\n\n");
+}
+
+void furaFila(TipoItem item, TipoFila *Fila){
+	TipoFila aux;
+	TipoItem itemAux;
+	int i = Fila->numEmelentos;
+	iniciaFila(&aux);
+	while(i>0){
+		desenfileirar(&itemAux, Fila);
+		if(item.chave != itemAux.chave){
+			enfileirar(itemAux, &aux);
+		}
+		i--;
+	}
+	
+	i = aux.numEmelentos;
+	enfileirar(item, Fila);
+	while(i>0){
+		desenfileirar(&itemAux, &aux);
+		enfileirar(itemAux, Fila);
+		i--;
+	}
+	
+}
