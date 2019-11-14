@@ -2,20 +2,15 @@
 
 #include <stdio.h>
 
-char imprimeInverso(char *str){
-	char aux;
-	if(str[0] == '\n'){
-		return '-';
+void imprimeInverso(char *str){
+	if(*str){
+		imprimeInverso(str+1);
+		putchar(*str);
 	}
-	printf("%c", aux);
-	return  aux = imprimeInverso(&str[1]);
 }
 
 int main(){
-	char str[20];
-	
+	char str[20];	
 	fgets(str, 20, stdin);
-	printf("\n");
 	imprimeInverso(str);
-	printf("\n");
 }

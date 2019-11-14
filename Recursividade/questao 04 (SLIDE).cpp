@@ -3,20 +3,20 @@
 #include <stdio.h>
 #include <string.h>
 
-int tamString(char *str){
+int tamString(char *str, char c){
 	if(str[0] == '\n'){
 		return 0;
-	}else if(str[0] == 'f'){
-		return tamString(&str[1]) + 1; 
+	}else if(str[0] == c){
+		return tamString(&str[1], c) + 1; 
 	}
-	return tamString(&str[1]);
+	return tamString(&str[1], c);
 }
 
 int main(){
-	char str[20];
+	char str[20], c = 'f';
 	
 	fgets(str, 20, stdin);
-	printf("\n%d\n", tamString(str));
+	printf("\n%d\n", tamString(str, c));
 	
 	return 0;
 }
